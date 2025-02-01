@@ -1,21 +1,23 @@
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 
+from data_handler import load_posts, add_post
+
 app = Flask(__name__)
 
-# Simulovaná databáze (seznam příspěvků)
-posts = []
 
 @app.route('/')
 def index():
+    posts = load_posts()
+    posts.reverse()
     return render_template('index.html', posts=posts)
 
 @app.route('/add', methods=['POST'])
-def add_post():
+def addPost():
     title = request.form.get('title')
     content = request.form.get('content')
     if title and content:
-        posts.append({'title': title, 'content': content})
+        add_post(title, content)
     return redirect(url_for('index'))
 
 @app.route('/external')

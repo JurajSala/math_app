@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "title": "Pozdrav z venku",
+        "content": "Ahoj, tak jsem zase tady."
+    },
+    {
+        "id": 2,
+        "title": "Pozdrav od počíteče",
+        "content": "Zdravím všechny developery na světě"
+    },
+    {
+        "id": 3,
+        "title": "Večer",
+        "content": "Blíží se večer a já budu muset končit."
+    },
+    {
+        "id": 4,
+        "title": "Odchod",
+        "content": "Budu pomalu odcházet domů!!!"
+    }
+]
