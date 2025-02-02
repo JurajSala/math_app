@@ -12,7 +12,7 @@
     <ul class="list-group">
         {% for post in posts %}
             <li class="list-group-item">
-                <h2>{{ post.title }}<h2>
+                <h2>{{ post.title }}  <strong class="h6"> >>> {{post.date}}</strong><h2>
                 <p class="rounded fs-5 bg-secondary p-3 text-white">{{ post.content }}</p> 
             </li>
         {% endfor %}

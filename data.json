@@ -1,22 +1,14 @@
 [
     {
         "id": 1,
-        "title": "Pozdrav z venku",
-        "content": "Ahoj, tak jsem zase tady."
+        "title": "Pozdrav",
+        "content": "Dnes je neděle a já Vás zdravím!!",
+        "date": "02.02.2025 12:00:09"
     },
     {
         "id": 2,
-        "title": "Pozdrav od počíteče",
-        "content": "Zdravím všechny developery na světě"
-    },
-    {
-        "id": 3,
-        "title": "Večer",
-        "content": "Blíží se večer a já budu muset končit."
-    },
-    {
-        "id": 4,
-        "title": "Odchod",
-        "content": "Budu pomalu odcházet domů!!!"
+        "title": "test1",
+        "content": "Test Aplikace. Přispěvky pro dnešní den",
+        "date": "02.02.2025 12:04:56"
     }
 ]
