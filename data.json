@@ -1,14 +1,9 @@
 [
     {
         "id": 1,
-        "title": "Pozdrav",
-        "content": "Dnes je neděle a já Vás zdravím!!",
-        "date": "02.02.2025 12:00:09"
-    },
-    {
-        "id": 2,
-        "title": "test1",
-        "content": "Test Aplikace. Přispěvky pro dnešní den",
-        "date": "02.02.2025 12:04:56"
+        "task_id": 1,
+        "title": "Lhaní o nepravdivém tvrzení je vždy pravda!!!",
+        "content": "Otázka: Mluví příslušník tvého kmene pravdu když říká, že tato cests vede do osady? Jedna se o cestu na ktero cizinec ukáže. Pokud nevede odpoví jak lhář, tak pravdomluvec ne a pokud vede, tak zase oba řeknou ano.",
+        "date": "04.02.2025 13:16:38"
     }
 ]

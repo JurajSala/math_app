@@ -1,16 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Blog{% endblock %}
 {% block content %}
-    <h1 class="text-primary text-center">Jednoduchý Flask Blog</h1>
+    <h1 class="text-primary text-center">Přidej řešení úlohy</h1>
+    <h2 class="text-secondary text-center">Úloha {{data.task.title}}</h2>
+    <p class="rounded fs-5 bg-secondary p-3 text-white">{{data.task.content}}</p>
     <hr class="border-2">
     <form method="POST" action="{{ url_for('addPost') }}" class="mb-4">
-        <input class="form-control mb-2" type="text" name="title" placeholder="Název" required>
-        <textarea class="form-control mb-2" name="content" placeholder="Obsah" required></textarea>
-        <button class="btn btn-primary" type="submit">Přidat příspěvek</button>
+        <input type="hidden" name ="task_id" value = "{{data.id}}" >
+        <input class="form-control mb-2" type="text" name="title" placeholder="Solusion_title" required>
+        <textarea class="form-control mb-2" name="content" placeholder="Solution" required></textarea>
+        <button class="btn btn-primary" type="submit">Add solution</button>
     </form>
-    <h2 class="text-secondary text-center">Příspěvky</h2>
+    <h2 class="text-secondary text-center">Řešení</h2>
     <ul class="list-group">
-        {% for post in posts %}
+        {% for post in data.data %}
             <li class="list-group-item">
                 <h2>{{ post.title }}  <strong class="h6"> >>> {{post.date}}</strong><h2>
                 <p class="rounded fs-5 bg-secondary p-3 text-white">{{ post.content }}</p> 

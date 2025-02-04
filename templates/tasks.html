@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Blog{% endblock %}
+{% block content %}
+    <h1 class="text-primary text-center">Tasks for solution</h1>
+    <hr class="border-2">
+    <form method="POST" action="{{ url_for('addTask') }}" class="mb-4">
+        <input class="form-control mb-2" type="text" name="title" placeholder="Title of ask" required>
+        <textarea class="form-control mb-2 p-3" name="content" placeholder="Task" required></textarea>
+        <button class="btn btn-primary" type="submit">Add task</button>
+    </form>
+    <h2 class="text-secondary text-center">Tasks</h2>
+    <ul class="list-group">
+        {% for task in tasks %}
+            <li class="list-group-item">
+                <h2>{{ task.title }}  <strong class="h6"> >>> {{task.date}}</strong><h2>
+                <p class="rounded fs-5 bg-secondary p-3 text-white">{{ task.content }}</p> 
+                <form action="{{ url_for('process_add_ask') }}" method="POST" style="display:inline;">
+                    <input type="hidden" name ="task_id" value = "{{task.id}}" >
+                    <input type="hidden" name ="task_title" value = "{{task.title}}" >
+                    <input type="hidden" name ="task_content" value = "{{task.content}}" >
+                    <button type="submit">Solutions</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
