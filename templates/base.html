@@ -1,20 +1,171 @@
 <!DOCTYPE html>
 <html lang="cs">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Blog{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap5/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Vlastní SCSS styl (přeložený do CSS) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- CSS pro Quill a KaTeX CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quill-custom.css') }}">
+    <!-- Připojení pro editory QUILL -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <!-- JS pro bootsrap5 -->
+    <script src="{{ url_for('static', filename='bootstrap5/dist/js/bootstrap.bundle.min.js') }}" defer></script>
+    <!-- JS pro Quill a KaTeX CSS-->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+
+    <!-- Pokud používáte auto-render extension pro automatické vykreslování formulí -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+        crossorigin="anonymous"></script>
+
+
+
+
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Tasks</a>
-            <a class="navbar-brand" href="{{ url_for('external_data') }}">API test</a>
-        </div>
-    </nav>
-    <div class="container mt-4">
-        {% block content %}{% endblock %}
+
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-dark bg-dark navbar-static-top navbar-expand-lg mb-4 mt-auto" role="navigation">
+            <div class="container">
+                <!-- Logo -->
+                <a class="navbar-brand fs-1 text-warning" href="#">Matematické hlavolamy</a>
+
+                <!-- Button hamburger menu -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#navbarOffcanvas" aria-controls="navbarOffcanvas">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Content navigation ( from right size) -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="navbarOffcanvas"
+                    aria-labelledby="navbarOffcanvasLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="navbarOffcanvasLabel">Navigace</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{{ url_for('tasks') }}">Tasks</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('external_data') }}">API test</a>
+                            </li>
+                            {% block list_task %}
+                            {% endblock %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-4 content flex-grow-1">
+        {% block content %}
+        {% endblock %}
     </div>
+    {% block accordion%}
+    <div class="accordion mt-1" id="accordionExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#helper"><strong> 
+                        {% if data %}
+                            Je třeba se učit a myslet. Nejsme opice, ale inteligentní jedinci.
+                       {% endif %}
+                       {% if solutions %}
+                            {{ solutions.task.title}}                 
+                       {% endif %}
+                      <i class="fa fa-chevron-down"
+                            aria-hidden="true"></i></strong></button>
+               
+            </h2>
+        </div>
+        <div id="helper" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <p> {% if data %}
+                        Myšlenkou je vytvořit zbírku úloh i s důvtiponými způsoby řešení. Matematika je hlavně o důvtipu a nápadu a ne jen o strojovém mechanismu. Matematiku a její jazyk vymysleli opravdu chytří lidé.
+                   {% endif %}
+                   {% if solutions %}
+                        {{ solutions.task.title}}                 
+                   {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    <footer class="bg-dark text-white text-center py-3 bottom-0">  &copy; My math practic</footer>
+
+    <script src="{{ url_for('static', filename='js/quill-init.js') }}"></script>
+    <script>
+        console.log('Quill editor initialized');
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializace editoru s parametry: ID editoru, ID skrytého inputu, ID formuláře
+            const quill = initQuillEditor('editor-container', 'content-input', 'taskForm');
+            const title = document.getElementById("task-title")
+            // Případně další specifické nastavení pro tuto stránku
+            
+            {% if data and data.task %}
+                          quill.root.innerHTML = `{{ data.task.content | safe }}`;
+             {% endif %}
+
+            document.querySelectorAll('.task-content-viewer').forEach(function (viewer) {
+                const viewerId = viewer.id;
+                const content = viewer.getAttribute('data-content');
+
+                // Vytvoříme read-only Quill editor
+                const readOnlyQuill = new Quill(`#${viewerId}`, {
+                    modules: {
+                        toolbar: false,
+                        formula: true  // Povolíme modul pro formule
+                    },
+                    readOnly: true,
+                    theme: 'bubble'  // Použijeme minimalistický vzhled
+                });
+
+                // Nastavíme obsah
+                readOnlyQuill.clipboard.dangerouslyPasteHTML(content);
+            });
+        });
+    </script>
+    <style>
+        /* Styly pro read-only editory */
+        .task-content-viewer {
+            min-height: 50px;
+            margin-bottom: 15px;
+        }
+
+        /* Přizpůsobení vzhledu pro read-only editory */
+        .task-content-viewer .ql-editor {
+            padding: 0;
+            overflow: visible;
+        }
+
+        /* Skryjeme hranice editoru */
+        .ql-container.ql-bubble {
+            border: none;
+        }
+
+        /* Zajistíme, aby formule byly viditelné na tmavém pozadí */
+        .task-content-viewer .ql-formula {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
 </body>
+
 </html>
