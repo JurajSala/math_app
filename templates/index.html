@@ -3,15 +3,30 @@
 {% block content %}
     <h1 class="text-white text-center">{{solutions.task.title}}</h1>
     <hr class="border-2 text-white">
-    <div class="task-content-viewer rounded fs-5 bg-secondary p-3 text-white" id="task-viewer-current" data-content="{{solutions.task.content}}">
+    <div 
+        data-bs-toggle="tooltip"
+        data-bs-html="true"   
+        data-bs-placement="left"   
+        title="<strong> Zde je celý obsah zadání, aby při psaní řešení jste nezraácel souvislost a šel s důvtipmým k cíly. </strong>"
+        class="task-content-viewer rounded fs-5 bg-secondary p-3 text-white" id="task-viewer-current" data-content="{{solutions.task.content}}">
     </div>
     <hr class="border-2 text-white">
-    <h2 class="text-secondary text-center">Add solution here</h2>
+    <h2 class="text-secondary text-center"> Add solution here</h2>
     <form method="POST" action="{{ url_for('addSolution') }}" class="mb-4" id="taskForm">
         <input type="hidden" name="task_id" value="{{solutions.id}}">
-        <input class="form-control mb-2" type="text" name="title" placeholder="Solusion_title" required>
+        <input  
+            data-bs-toggle="tooltip"
+            data-bs-html="true"   
+            data-bs-placement="left"   
+            title="<strong> Zde zadej nazev řešeni. Použij jasne heslo, ktere vs obe nese i hlavni myšlenku, řešení problému. </strong>"
+            class="form-control mb-2" type="text" name="title" placeholder="Solusion_title" required>
         <div class="quill-editor-wrapper">
-            <div id="editor-container" class="mb-2" style="height: 200px; background-color: white; border-radius: 4px;">
+            <div 
+                 data-bs-toggle="tooltip" 
+                 data-bs-placement="left" 
+                 data-bs-html="true" 
+                 title="<strong> Zde piš přímo řešeni a používej editor. </strong>"
+                id="editor-container" class="mb-2" style="height: 200px; background-color: white; border-radius: 4px;">
             </div>
             <input type="hidden" name="content" id="content-input">
         </div>
@@ -20,12 +35,17 @@
     <hr class="border-5 text-white">
     <h2 class="text-primary text-center">List od solutions</h2>
     {% if solutions.data %}
-    <ul class="list-group">
+    <ul class="list-group d-flex gap-1">
         {% for post in solutions.data %}
-        <li class="list-group-item">
-            <h2>{{ post.title }} <strong class="h6"> >>> {{post.date}}</strong>
-                <h2>
-                    <!-- <p class="rounded fs-5 bg-secondary p-3 text-white">{{ post.content }}</p> -->
+            <li class="list-group-item">
+                <div class="row" data-bs-toggle="collapse" href="#postContent-{{post.id}}" role="button" aria-expanded="false"
+                            aria-controls="postContent-{{post.id}}" style="cursor: pointer;">
+                    <h2>{{ post.title }} <strong class="h6"> >>> {{post.date}}</strong> </h2>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                        <!-- <p class="rounded fs-5 bg-secondary p-3 text-white">{{ post.content }}</p> -->
+                <div class="collapse" id="postContent-{{post.id}}">
+                    <span class="bagge bg-light text-black border border-2 p-2 rounded">Solution</span>
                     <div class="task-content-viewer rounded fs-5 bg-secondary p-3 text-white" id="task-viewer-{{ post.id }}" data-content="{{ post.content }}"></div>
                     <div class="btn-group">
                         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
@@ -38,7 +58,7 @@
                                     data-bs-target="#deleteModal" data-id="{{post.id}}" data-action="hide">
                                     Zneviditelnit řešení
                                 </button>
-                            </div>
+                            </div>                                
                             <div>
                                 <form method="POST" action="{{ url_for('deleteSolution') }}"
                                     class="dropdown-item mb-4 delete-form">
@@ -47,13 +67,14 @@
                                     <button type="submit" class="btn btn-danger delete-btn dropdown-item delete"
                                         data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{post.id}}"
                                         data-action="delete">
-                                        Odstranit řešení
+                                            Odstranit řešení
                                     </button>
                                 </form>
                             </div>
                         </div>
                     </div>
-        </li>
+                </div>
+            </li>
         {% endfor %}
         {% else %}
         <p class="rounded fs-4 bg-black p-3 text-white"> Nejsou zatím žádná řešení k dispozici. Zkus nějaké přidat. 🥸</p>

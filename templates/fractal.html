@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Fractals{% endblock %}
+{% block content %}
+    <div class="container mt-5">
+        {% if fractal=='mandelbrot'%}
+            <h1 class="text-white">Fraktál ->  'Mandelbrotova množina' </h1>
+        {% elif fractal=='julia'%}
+            <h1 class="text-white">Fraktál ->  'Jullieovy mnoziny' </h1>
+        {% elif fractal=='lyapunov'%}
+            <h1 class="text-white">Fraktál ->  'Lyapunov fraktál' </h1>
+         {% elif fractal=='barnsley'%}
+            <h1 class="text-white">Fraktál ->  'Barnsleyův kapradinový fraktál' </h1>
+        {% else %}
+            <h1 class="text-white">Fraktál -> {{ 'Čtvercová vločka' if fractal=='square' else 'Kochova vločka' }} </h1>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-4">
+                <form method="get" action="{{ url_for('fractal_generator') }}" class="card p-4 shadow-sm">
+                    <div class="col-auto">
+                        <label class="form-label">Typ</label>
+                        <select name="type" class="form-select">
+                            <option value="koch" {% if fractal=='koch' %}selected{% endif %}>Kochova vločka</option>
+                            <option value="square" {% if fractal=='square' %}selected{% endif %}>Čtvercová vločka</option>
+                            <option value="mandelbrot" {% if fractal=='mandelbrot' %}selected{% endif %}>Mandelbrot</option>
+                            <option value="julia" {% if fractal=='julia' %}selected{% endif %}>Julia</option>
+                            <option value="lyapunov" {% if fractal=='lyapunov' %}selected{% endif %}>Ljapunov</option>
+                            <option value="barnsley" {% if fractal=='barnsley' %}selected{% endif %}>Barnsley Fern</option>
+                        </select>
+                    </div>
+                    {% if fractal in ['mandelbrot','julia','lyapunov','barnsley'] %}
+                        <div class="col-auto">
+                            <label class="form-label">Iterací</label>
+                            <input type="number" name="iter" class="form-control" value="{{ request.args.get('iter', fractal=='barnsley' and 100000 or 100) }}">
+                        </div>
+                    {% endif %}
+                    {% if fractal=='mandelbrot' or fractal=='julia' %}
+                        <div class="col-auto">
+                            <label class="form-label">Exponent p</label>
+                            <input type="number" name="p" class="form-control" value="{{ request.args.get('p', 2) }}">
+                        </div>
+                        {% if fractal=='julia' %}
+                            <div class="col-auto">
+                                <label class="form-label">Re(c)</label>
+                                <input type="number" step="any" name="cre" class="form-control" value="{{ request.args.get('cre', -0.7) }}">
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-label">Im(c)</label>
+                                <input type="number" step="any" name="cim" class="form-control" value="{{ request.args.get('cim', 0.27015) }}">
+                            </div>
+                        {% endif %}
+                    {% elif fractal=='lyapunov' %}
+                        <div class="col-auto">
+                            <label class="form-label">Iterací</label>
+                            <input type="number" name="iter" class="form-control" value="{{ request.args.get('iter', 100) }}">
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">Vzor (pattern)</label>
+                            <input type="text" name="pattern" class="form-control" value="{{ request.args.get('pattern', 'AB') }}">
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">A min</label>
+                            <input type="number" step="any" name="a_min" class="form-control" value="{{ request.args.get('a_min', 2.5) }}">
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">A max</label>
+                            <input type="number" step="any" name="a_max" class="form-control" value="{{ request.args.get('a_max', 4.0) }}">
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">B min</label>
+                            <input type="number" step="any" name="b_min" class="form-control" value="{{ request.args.get('b_min', 2.5) }}">
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">B max</label>
+                            <input type="number" step="any" name="b_max" class="form-control" value="{{ request.args.get('b_max', 4.0) }}">
+                        </div>
+                    {% elif fractal=='barnsley' %}
+                       <div class="col-auto">
+                            <label class="form-label">Velikost</label>
+                            <input type="number" name="size" class="form-control" value="{{ size }}">
+                        </div>
+                    {% endif %}
+                    {% if fractal=='square' or fractal=='koch' %}
+                        <div class="col-auto">
+                            <label class="form-label">Hloubka</label>
+                            <input type="number" name="depth" class="form-control" value="{{ depth }}">
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">Velikost</label>
+                            <input type="number" name="size" class="form-control" value="{{ size }}">
+                        </div>
+                    {% endif %}
+                    <div class="col-auto align-self-end">
+                        <button type="submit" class="btn btn-primary">Vygenerovat</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-8">
+                <div class="border shadow-sm p-2 d-inline-block">
+                    <img src="data:image/png;base64,{{ img_data }}" class="img-fluid" alt="Fraktál">
+                </div>
+            </div>
+        </div>
+ </div>
+ {% endblock %}

@@ -73,6 +73,27 @@ p::first-letter {
   z-index: 10;
   color: white
 }
+// zakolibani tlacitek, kdyz na ne najedes. 
+@keyframes sway {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(3deg); }
+  50%  { transform: rotate(0deg); }
+  75%  { transform: rotate(-3deg); }
+  100% { transform: rotate(0deg); }
+}
+.btn {
+  display: inline-block;
+  /* nastav střed otáčení (třeba spodní střed u tlačítka) */
+  transform-origin: center bottom;
+  transition: transform 0.2s ease; // základní přechod, aby se i bez hoveru hezky choval
+
+  &:hover {
+    /* při hoveru spusť animaci sway, nech ji jednou dokončit */
+    animation: sway 0.3s ease-in-out 2;
+    /* po hoveru nech tlačítko zůstat v původní pozici */
+    animation-fill-mode: forwards;
+  }
+}
 footer{
   width: 100%;
   bottom: 0px;
@@ -82,6 +103,66 @@ footer{
   align-items: center;
   background-color: black;
   color: white;
+}
+
+//Rotate o 90 degree efect
+
+// simple rotation
+// .rotate {
+//   display: inline-block;
+//   cursor: pointer;
+  
+//   // center of rotate
+//   transform-origin: center center;
+
+//   // smooth animation on transformation
+//   transition: transform 0.3s ease-in-out;
+// }
+
+// colibation rotation
+
+@keyframes bounce-to-minus-90 {
+  0%   { transform: rotate(0deg); }
+  60%  { transform: rotate(-100deg); }  // malé přetažení
+  75%  { transform: rotate(-85deg); }   // odraz zpět
+  90%  { transform: rotate(-95deg); }   // druhý přetažení
+  100% { transform: rotate(-90deg); }   // finální pozice
+}
+
+@keyframes bounce-to-0 {
+  0%   { transform: rotate(-90deg); }
+  60%  { transform: rotate(10deg); }
+  75%  { transform: rotate(-5deg); }
+  90%  { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.rotate {
+  display: inline-block;
+  cursor: pointer;
+  transform-origin: center center;
+
+  // už nepoužíváme transition, ale animaci až na vyžádání:
+  transition: none;
+
+  &.to-minus-90 {
+    animation: bounce-to-minus-90 0.6s ease-out forwards;
+  }
+  &.to-0 {
+    animation: bounce-to-0 0.6s ease-out forwards;
+  }
+}
+
+// ----------------- Setting Tooltips
+
+.tooltip {
+  // Background color
+  --bs-tooltip-bg:  var(--bs-warning) !important;
+  // Black color at inner tooltip
+  .tooltip-inner {
+    color: black !important;
+  }
+
 }
 
 // ----------------- Quill Editor Styling

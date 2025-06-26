@@ -64,6 +64,12 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('external_data') }}">API test</a>
                             </li>
+                             <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('fractal_generator') }}">Fraktály</a>
+                            </li>
+                             <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('group_view') }}">Grupy</a>
+                            </li>
                             {% block list_task %}
                             {% endblock %}
                         </ul>
@@ -82,16 +88,16 @@
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#helper"><strong> 
+                    data-bs-target="#helper"><strong>
                         {% if data %}
                             Je třeba se učit a myslet. Nejsme opice, ale inteligentní jedinci.
                        {% endif %}
                        {% if solutions %}
-                            {{ solutions.task.title}}                 
+                            {{ solutions.task.title}}
                        {% endif %}
                       <i class="fa fa-chevron-down"
                             aria-hidden="true"></i></strong></button>
-               
+
             </h2>
         </div>
         <div id="helper" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
@@ -100,7 +106,7 @@
                         Myšlenkou je vytvořit zbírku úloh i s důvtiponými způsoby řešení. Matematika je hlavně o důvtipu a nápadu a ne jen o strojovém mechanismu. Matematiku a její jazyk vymysleli opravdu chytří lidé.
                    {% endif %}
                    {% if solutions %}
-                        {{ solutions.task.title}}                 
+                        {{ solutions.task.title}}
                    {% endif %}
                 </p>
             </div>
@@ -117,10 +123,10 @@
             const quill = initQuillEditor('editor-container', 'content-input', 'taskForm');
             const title = document.getElementById("task-title")
             // Případně další specifické nastavení pro tuto stránku
-            
+
             {% if data and data.task %}
                           quill.root.innerHTML = `{{ data.task.content | safe }}`;
-             {% endif %}
+            {% endif %}
 
             document.querySelectorAll('.task-content-viewer').forEach(function (viewer) {
                 const viewerId = viewer.id;
@@ -139,6 +145,7 @@
                 // Nastavíme obsah
                 readOnlyQuill.clipboard.dangerouslyPasteHTML(content);
             });
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el, { allowHTML: true}));
         });
     </script>
     <style>
