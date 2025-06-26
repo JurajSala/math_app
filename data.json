@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "title": "Pozdrav",
+        "content": "Dnes je neděle a já Vás zdravím!!",
+        "date": "02.02.2025 12:00:09"
+    },
+    {
+        "id": 2,
+        "title": "test1",
+        "content": "Test Aplikace. Přispěvky pro dnešní den",
+        "date": "02.02.2025 12:04:56"
+    }
+]

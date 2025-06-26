@@ -1,16 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Blog{% endblock %}
 {% block content %}
-    <h1 class="text-primary">Jednoduchý Flask Blog</h1>
-    <form method="POST" action="{{ url_for('add_post') }}" class="mb-4">
+    <h1 class="text-primary text-center">Jednoduchý Flask Blog</h1>
+    <hr class="border-2">
+    <form method="POST" action="{{ url_for('addPost') }}" class="mb-4">
         <input class="form-control mb-2" type="text" name="title" placeholder="Název" required>
         <textarea class="form-control mb-2" name="content" placeholder="Obsah" required></textarea>
         <button class="btn btn-primary" type="submit">Přidat příspěvek</button>
     </form>
-    <h2 class="text-secondary">Příspěvky</h2>
+    <h2 class="text-secondary text-center">Příspěvky</h2>
     <ul class="list-group">
         {% for post in posts %}
-            <li class="list-group-item"><strong>{{ post.title }}</strong>: {{ post.content }}</li>
+            <li class="list-group-item">
+                <h2>{{ post.title }}  <strong class="h6"> >>> {{post.date}}</strong><h2>
+                <p class="rounded fs-5 bg-secondary p-3 text-white">{{ post.content }}</p> 
+            </li>
         {% endfor %}
     </ul>
 {% endblock %}
