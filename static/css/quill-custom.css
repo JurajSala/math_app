@@ -1,0 +1,7 @@
+/* Vlastní ikona pro tlačítko formula */
+.ql-snow .ql-toolbar button.ql-formula::before {
+    content: "Σ";
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1;
+}

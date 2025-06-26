@@ -1,16 +1,229 @@
 {% extends "base.html" %}
 {% block title %}Blog{% endblock %}
 {% block content %}
-    <h1 class="text-primary">Jednoduchý Flask Blog</h1>
-    <form method="POST" action="{{ url_for('add_post') }}" class="mb-4">
-        <input class="form-control mb-2" type="text" name="title" placeholder="Název" required>
-        <textarea class="form-control mb-2" name="content" placeholder="Obsah" required></textarea>
-        <button class="btn btn-primary" type="submit">Přidat příspěvek</button>
+    <h1 class="text-white text-center">{{solutions.task.title}}</h1>
+    <hr class="border-2 text-white">
+    <div 
+        data-bs-toggle="tooltip"
+        data-bs-html="true"   
+        data-bs-placement="left"   
+        title="<strong> Zde je celý obsah zadání, aby při psaní řešení jste nezraácel souvislost a šel s důvtipmým k cíly. </strong>"
+        class="task-content-viewer rounded fs-5 bg-secondary p-3 text-white" id="task-viewer-current" data-content="{{solutions.task.content}}">
+    </div>
+    <hr class="border-2 text-white">
+    <h2 class="text-secondary text-center"> Add solution here</h2>
+    <form method="POST" action="{{ url_for('addSolution') }}" class="mb-4" id="taskForm">
+        <input type="hidden" name="task_id" value="{{solutions.id}}">
+        <input  
+            data-bs-toggle="tooltip"
+            data-bs-html="true"   
+            data-bs-placement="left"   
+            title="<strong> Zde zadej nazev řešeni. Použij jasne heslo, ktere vs obe nese i hlavni myšlenku, řešení problému. </strong>"
+            class="form-control mb-2" type="text" name="title" placeholder="Solusion_title" required>
+        <div class="quill-editor-wrapper">
+            <div 
+                 data-bs-toggle="tooltip" 
+                 data-bs-placement="left" 
+                 data-bs-html="true" 
+                 title="<strong> Zde piš přímo řešeni a používej editor. </strong>"
+                id="editor-container" class="mb-2" style="height: 200px; background-color: white; border-radius: 4px;">
+            </div>
+            <input type="hidden" name="content" id="content-input">
+        </div>
+        <button class="btn btn-primary" type="submit">Add solution</button>
     </form>
-    <h2 class="text-secondary">Příspěvky</h2>
-    <ul class="list-group">
-        {% for post in posts %}
-            <li class="list-group-item"><strong>{{ post.title }}</strong>: {{ post.content }}</li>
+    <hr class="border-5 text-white">
+    <h2 class="text-primary text-center">List od solutions</h2>
+    {% if solutions.data %}
+    <ul class="list-group d-flex gap-1">
+        {% for post in solutions.data %}
+            <li class="list-group-item">
+                <div class="row" data-bs-toggle="collapse" href="#postContent-{{post.id}}" role="button" aria-expanded="false"
+                            aria-controls="postContent-{{post.id}}" style="cursor: pointer;">
+                    <h2>{{ post.title }} <strong class="h6"> >>> {{post.date}}</strong> </h2>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                        <!-- <p class="rounded fs-5 bg-secondary p-3 text-white">{{ post.content }}</p> -->
+                <div class="collapse" id="postContent-{{post.id}}">
+                    <span class="bagge bg-light text-black border border-2 p-2 rounded">Solution</span>
+                    <div class="task-content-viewer rounded fs-5 bg-secondary p-3 text-white" id="task-viewer-{{ post.id }}" data-content="{{ post.content }}"></div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            Možnosti
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="m-3">
+                                <button class="btn btn-danger hidden-btn dropdown-item hidden" data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal" data-id="{{post.id}}" data-action="hide">
+                                    Zneviditelnit řešení
+                                </button>
+                            </div>                                
+                            <div>
+                                <form method="POST" action="{{ url_for('deleteSolution') }}"
+                                    class="dropdown-item mb-4 delete-form">
+                                    <input type="hidden" name="solution_id" value="{{post.id}}">
+                                    <input type="hidden" name="task_id" value="{{solutions.id}}">
+                                    <button type="submit" class="btn btn-danger delete-btn dropdown-item delete"
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{post.id}}"
+                                        data-action="delete">
+                                            Odstranit řešení
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
         {% endfor %}
+        {% else %}
+        <p class="rounded fs-4 bg-black p-3 text-white"> Nejsou zatím žádná řešení k dispozici. Zkus nějaké přidat. 🥸</p>
+        {%endif%}
     </ul>
+    <!-- Modální okno-->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="actionModalLabel">Potvrzení zneviditelnění</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                </div>
+                <div class="modal-body" id="modal-text">
+                    Opravdu chcete zneviditelnit toto řešení?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zavřít okno</button>
+                    <button type="button" class="btn btn-danger" id="confirmActionBtn">Zneviditelnit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let solutionToHidden = null;
+            let formToSubmit = null;
+            let currentAction = null;
+
+            const setModalWindow = (header, content, confirm, color) => {
+                let actionText = document.getElementById('actionModalLabel');
+                let modalText = document.getElementById('modal-text');
+                let confirmBtn = document.getElementById('confirmActionBtn');
+
+                if (color === "btn-danger") {
+                    confirmBtn.classList.remove("btn-warning");
+                    confirmBtn.classList.add("btn-danger");
+                } else {
+                    confirmBtn.classList.remove("btn-danger");
+                    confirmBtn.classList.add("btn-warning");
+                }
+
+                actionText.textContent = header;
+                modalText.textContent = content;
+                confirmBtn.textContent = confirm;
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = confirm;
+            }
+
+            const closeModal = () => {
+                try {
+                    const modal = window.bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                    if (modal) modal.hide();
+                } catch (error) {
+                    console.error('Chyba při zavírání modalu:', error);
+                }
+            }
+
+            document.querySelectorAll('.hidden-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    solutionToHidden = this.closest('li');
+                    currentAction = this.dataset.action;
+                    setModalWindow(
+                        "Potvrzení zneviditelnění",
+                        "Opravdu chcete zneviditelnit řešení?",
+                        "Zneviditelnit řešení",
+                        "btn-warning"
+                    );
+                });
+            });
+
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    formToSubmit = e.target;
+                    currentAction = e.target.querySelector('button').dataset.action;
+                    setModalWindow(
+                        "Potvrzení smazání",
+                        "Opravdu chcete smazat řešení?",
+                        "Odstranit řešení",
+                        "btn-danger"
+                    );
+                });
+            });   
+
+            document.getElementById('confirmActionBtn').addEventListener('click', async function () {
+                const confirmBtn = this;
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Probíhá zpracování...';
+
+                try {
+                    if (currentAction === 'hide' && solutionToHidden) {
+                        solutionToHidden.remove();
+                        solutionToHidden = null;
+                    } else if (currentAction === 'delete' && formToSubmit) {
+                        formToSubmit.submit();
+                        formToSubmit = null;
+                    }
+                    closeModal();
+                } catch (error) {
+                    console.error('Chyba při zpracování akce:', error);
+                    confirmBtn.innerHTML = 'Chyba při zpracování';
+                    setTimeout(() => {
+                        confirmBtn.disabled = false;
+                        confirmBtn.innerHTML = currentAction === 'hide' ? 'Zneviditelnit řešení' : 'Odstranit řešení';
+                    }, 2000);
+                }
+            });
+
+            document.querySelectorAll('.task-content-viewer').forEach(function (viewer) {
+                    const viewerId = viewer.id;
+                    const content = viewer.getAttribute('data-content');
+
+                    // Vytvoříme read-only Quill editor
+                    const readOnlyQuill = new Quill(`#${viewerId}`, {
+                        modules: {
+                            toolbar: false,
+                            formula: true  // Povolíme modul pro formule
+                        },
+                        readOnly: true,
+                        theme: 'bubble'  // Použijeme minimalistický vzhled
+                    });
+
+                    // Nastavíme obsah
+                    readOnlyQuill.clipboard.dangerouslyPasteHTML(content);
+                });
+        });
+    </script>
 {% endblock %}
+<!-- {% block accordion%}
+<div class="accordion mt-1" id="accordionExample">
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                data-bs-target="#helper"><strong> 
+                   {% if solutions %}
+                    {{ solutions.task.title}}                 
+                  {% endif %}<i class="fa fa-chevron-down"
+                        aria-hidden="true"></i></strong></button>
+           
+        </h2>
+    </div>
+    <div id="helper" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            <p> 
+               {% if solutions %}
+                {{ solutions.task["title"]}}                 
+              {% endif %}</p>
+        </div>
+    </div>
+</div>
+{% endblock %} -->

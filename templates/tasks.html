@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block title %}Blog{% endblock %}
+{% block list_task %}
+    <!-- Dropdown menu -->
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Select task
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="navbarDropdown">
+            {% if data.tasks %}
+                {% for task in data.tasks %}
+                <li>
+                    <form action="{{ url_for('process_add_solution_for_ask') }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="task_id" value="{{task.id}}">
+                        <input type="hidden" name="task_title" value="{{task.title}}">
+                        <input type="hidden" name="task_content" value="{{task.content}}">
+                        <button type="submit">{{task.title}}</button>
+                    </form>
+                </li>
+                {% endfor %}
+            {% endif %}
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Setting</a></li>
+        </ul>
+    </li>
+{% endblock %}
+{% block content %}
+    <h1 class="text-warning text-center">Add problem for solution</h1>
+    <hr class="border-2">
+    {% if data.task %}
+        <form method="POST" action="{{ url_for('editTask', task_id=data.task.id) }}" class="mb-4" id="taskForm">
+            <input 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                data-bs-html="true" 
+                title="<strong> Zde můžete upravit název úlohy ve sbírce </strong>"  
+                class="form-control mb-2" type="text" name="title" placeholder="Title of ask" id="task_title" value="{{data.task.title}}"
+                required>
+    {% else %}
+        <form method="POST" action="{{ url_for('addTask') }}" class="mb-4" id="taskForm">
+            <input 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="left" 
+                data-bs-html="true" 
+                title="<strong> Zde můžete přidat název další zajímavou úlohu do sbírky. </strong>"
+                class="form-control mb-2" type="text" name="title" placeholder="Title of ask" id="task_title"
+                required>
+    {% endif %}
+        
+            <div class="quill-editor-wrapper">
+                <div 
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="left" 
+                    data-bs-html="true" 
+                    title="<strong> Zde piš přímo zadani úlohy a použivej TeX editor. </strong>"
+                    id="editor-container" class="mb-2" style="height: 200px; background-color: white; border-radius: 4px;" ></div>
+                <input type="hidden" name="content" id="content-input">
+            </div>
+            <button   class="btn btn-primary"  type="submit">
+                    {% if data.task %} 
+                    Edit task
+                    {% else %}
+                    Add task
+                    {% endif %}
+            </button>
+        </form>
+        <hr class="border-2">
+        <h2 class="text-warning text-center">List of problems</h2>
+        <ul class="list-group d-flex gap-1">
+           {% for task in data.tasks %}
+               <li class="list-group-item">
+                    <div class="row" data-bs-toggle="collapse" href="#taskContent-{{task.id}}" role="button" aria-expanded="false"
+                        aria-controls="taskContent-{{task.id}}" style="cursor: pointer;">
+                        <h2>{{ task.title }} <strong class="h6"> >>> {{task.date}}</strong></h2>
+                        <i class="bi bi-chevron-down"></i> <!-- Bootstrap icon for dropdown indicator -->
+                    </div>
+                    <div class="collapse" id="taskContent-{{task.id}}">
+                        <span class="bagge bg-secondary text-white border border-2 p-2 rounded">Task</span>
+                        <div class="task-content-viewer rounded fs-5 bg-light p-3 text-black border border-2 border-dashed"
+                            id="task-viewer-{{task.id}}" data-content="{{task.content|e}}">
+                        </div>
+                        <div class="row">
+                            <div class="col-6 d-flex justify-content-center align-items-center gap-1">
+                                <button class="btn btn-light border rotate" type="button" data-bs-toggle="collapse"
+                                    href="#taskForm-{{task.id}}"> → </button>
+                            </div>
+                            <div class="col-6 collapse mt-2" id="taskForm-{{task.id}}">
+                                <div class="col-md-6 d-flex justify-content-beetween gap-1">
+                                    <form action="{{ url_for('process_add_solution_for_ask') }}" method="POST"
+                                        style="display:inline;">
+                                        <input type="hidden" name="task_id" value="{{task.id}}">
+                                        <input type="hidden" name="task_title" value="{{task.title}}">
+                                        <input type="hidden" name="task_content" value="{{task.content}}">
+                                        <button type="submit" class="btn btn-light border border-2">Loook at solutions or add it</button>
+                                    </form>
+                                    <form action="{{ url_for('deleteTask') }}" method="POST" style="display:inline;"
+                                        class="delete-form">
+                                        <input type="hidden" name="task_id" value="{{task.id}}">
+                                        <button type="submit" class="btn btn-danger delete-btn delete border border-2" data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal" data-action="delete">
+                                            Delete task
+                                        </button>
+                                    </form>
+                                    <form action="{{ url_for('startEditTask') }}" method="POST" style="display:inline;">
+                                        <input type="hidden" name="task_id" value="{{task.id}}">
+                                        <button type="submit" class="btn btn-warning border border-2">Edit task</button>
+                                    </form>
+                                </div>
+                                <div class="col-md-6 d-flex justify-content-start gap-1">
+                                    <div class="inline-flex align-items-center gap-1">
+                                        <span> Počet řešení</span>
+                                        <span class="badge bg-warning align-self-center">{{task.solutions_count}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <!-- Modální okno-->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="actionModalLabel">Potvrzení odstranení úlohy</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                    </div>
+                    <div class="modal-body" id="modal-text">
+                        Opravdu chcete zneviditelnit toto řešení?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zavřít okno</button>
+                        <button type="button" class="btn btn-danger" id="confirmActionBtn">Odstranit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let askToDelete = null;
+            let formToSubmit = null;
+            let currentAction = null;
+
+            const setModalWindow = (header, content) => {
+                let actionText = document.getElementById('actionModalLabel');
+                let modalText = document.getElementById('modal-text');
+
+                actionText.textContent = header;
+                modalText.textContent = content;
+                confirmBtn.disabled = false;
+            }
+
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    formToSubmit = e.target;
+                    setModalWindow(
+                        "Potvrzení smazání",
+                        "Opravdu chcete smazat úlohu?",
+                    );
+                });
+            });
+
+            document.getElementById('confirmActionBtn').addEventListener('click', async function () {
+                const confirmBtn = this;
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Probíhá zpracování...';
+
+                try {
+                    if (formToSubmit) {
+                        formToSubmit.submit();
+                        formToSubmit = null;
+                    }
+                    closeModal();
+                } catch (error) {
+                    console.error('Chyba při zpracování akce:', error);
+                    confirmBtn.innerHTML = 'Chyba při zpracování';
+                }
+            });
+            // Inicializace všech task-content-viewer elementů
+            document.querySelectorAll('.task-content-viewer').forEach(function (viewer) {
+                const content = viewer.getAttribute('data-content');
+                if (content) {
+                    viewer.innerHTML = content;
+                }
+            });
+            // Totace butons class --> rotate 
+            document.querySelectorAll('.rotate').forEach(el => {
+            //    let angle = 0;
+            //    el.addEventListener('click', () => {
+            //       angle = angle === 0 ? -90 : 0;
+            //       el.style.transform = `rotate(${angle}deg)`;
+            //    });
+
+               let state = 0; // 0 or -9deg 
+
+                el.addEventListener('click', () => {
+                    // rm classes from element
+                    el.classList.remove('to-minus-90', 'to-0');
+
+                    if (state === 0) {
+                    // go to -90deg
+                    el.classList.add('to-minus-90');
+                    state = -90;
+                    } else {
+                    // go to 0deg
+                    el.classList.add('to-0');
+                    state = 0;
+                    }
+  });
+            });
+
+            
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,377 @@
+@use "../bootstrap5/scss/functions" as *;
+@use "../bootstrap5/scss/variables" as *;
+@use "../bootstrap5/scss/mixins" as *;
+@use "../bootstrap5/scss/bootstrap" as *;
+
+// Vlastní styly
+$primary-owner: #171616;
+$font-family-base-owner: 'Arial, sans-serif';
+
+// Definice vlastního mixinu pro responzivitu
+@mixin responsive-md-down {
+  @media (max-width: 767.98px) {
+    @content;
+  }
+}
+
+body {
+  background-color: #919fb1;
+  font-family: $font-family-base-owner;
+  background-image: url('/static/images/background-board.png');
+  background-size: cover;        // Přizpůsobí velikost pozadí
+  background-repeat: no-repeat;  // Nebude se opakovat
+  background-position: center;
+}
+
+h2 {
+  color: $primary-owner;
+  text-align: center;
+}
+.offcanvas.offcanvas-end {
+  width: 200px; // nastavte požadovanou šířku
+  background-color: rgb(26, 26, 25);
+  color:white;
+  text-align: center;
+}
+
+.offcanvas-title{
+  border-bottom: 1px white solid;
+  width: 100%;
+  text-align: center;
+}
+p{
+  text-align: start;
+}
+p::first-letter {
+  margin-left: 20px; /* nastavení odsazení dle potřeby */
+}
+.content li{
+  margin-bottom: 0px;
+}
+.dropdown-menu li{
+  margin-bottom: 2px;
+}
+.navbar-toggler {
+    border: none; // Skrytí okraje hamburger tlačítka
+}
+.hidden{
+  border-radius: 4px;
+  @extend .bg-warning;
+}
+.hidden:hover{
+  color:white;
+}
+.delete{
+  border-radius: 4px;
+  @extend .bg-danger;
+}
+.delete:hover{
+  color:white;
+}
+.accordion-body p{
+  position: relative; // důležité pro z-index
+  z-index: 10;
+  color: white
+}
+// zakolibani tlacitek, kdyz na ne najedes. 
+@keyframes sway {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(3deg); }
+  50%  { transform: rotate(0deg); }
+  75%  { transform: rotate(-3deg); }
+  100% { transform: rotate(0deg); }
+}
+.btn {
+  display: inline-block;
+  /* nastav střed otáčení (třeba spodní střed u tlačítka) */
+  transform-origin: center bottom;
+  transition: transform 0.2s ease; // základní přechod, aby se i bez hoveru hezky choval
+
+  &:hover {
+    /* při hoveru spusť animaci sway, nech ji jednou dokončit */
+    animation: sway 0.3s ease-in-out 2;
+    /* po hoveru nech tlačítko zůstat v původní pozici */
+    animation-fill-mode: forwards;
+  }
+}
+footer{
+  width: 100%;
+  bottom: 0px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  color: white;
+}
+
+//Rotate o 90 degree efect
+
+// simple rotation
+// .rotate {
+//   display: inline-block;
+//   cursor: pointer;
+  
+//   // center of rotate
+//   transform-origin: center center;
+
+//   // smooth animation on transformation
+//   transition: transform 0.3s ease-in-out;
+// }
+
+// colibation rotation
+
+@keyframes bounce-to-minus-90 {
+  0%   { transform: rotate(0deg); }
+  60%  { transform: rotate(-100deg); }  // malé přetažení
+  75%  { transform: rotate(-85deg); }   // odraz zpět
+  90%  { transform: rotate(-95deg); }   // druhý přetažení
+  100% { transform: rotate(-90deg); }   // finální pozice
+}
+
+@keyframes bounce-to-0 {
+  0%   { transform: rotate(-90deg); }
+  60%  { transform: rotate(10deg); }
+  75%  { transform: rotate(-5deg); }
+  90%  { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.rotate {
+  display: inline-block;
+  cursor: pointer;
+  transform-origin: center center;
+
+  // už nepoužíváme transition, ale animaci až na vyžádání:
+  transition: none;
+
+  &.to-minus-90 {
+    animation: bounce-to-minus-90 0.6s ease-out forwards;
+  }
+  &.to-0 {
+    animation: bounce-to-0 0.6s ease-out forwards;
+  }
+}
+
+// ----------------- Setting Tooltips
+
+.tooltip {
+  // Background color
+  --bs-tooltip-bg:  var(--bs-warning) !important;
+  // Black color at inner tooltip
+  .tooltip-inner {
+    color: black !important;
+  }
+
+}
+
+// ----------------- Quill Editor Styling
+.quill-editor-wrapper {
+  margin-bottom: 1.5rem;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+ 
+  
+  // Toolbar styling
+  .ql-toolbar {
+    background-color: #f0f2f5;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    padding: 0.75rem;
+    
+    // Buttons in toolbar
+    button {
+      height: 28px;
+      width: 28px;
+      margin-right: 5px;
+      
+      &:hover {
+        background-color: #e2e6ea;
+      }
+      
+      &.ql-active {
+        background-color: #d1d7e0;
+        color: $primary-owner;
+      }
+    }
+    
+    // Dropdown styling
+    .ql-picker {
+      &.ql-expanded .ql-picker-options {
+        border-color: #ddd;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      &.ql-expanded .ql-picker-label {
+        border-color: #ddd;
+      }
+    }
+    
+    // Formula button special styling
+    .ql-formula {
+      position: relative;
+      
+      &:after {
+        content: "Σ";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-weight: bold;
+        font-size: 16px;
+      }
+    }
+  }
+  
+  // Editor area styling
+  .ql-container {
+    border: none;
+    font-family: $font-family-base-owner;
+    font-size: 1rem;
+    
+    .ql-editor {
+      min-height: 200px;
+      padding: 1rem;
+      background-color: white;
+      
+      &:focus {
+        outline: none;
+      }
+      
+      // Styling for different elements inside editor
+      p {
+        margin-bottom: 0.75rem;
+      }
+      
+      h1, h2, h3, h4, h5, h6 {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        color: $primary-owner;
+      }
+      
+      blockquote {
+        border-left: 4px solid #ddd;
+        padding-left: 1rem;
+        color: #666;
+        font-style: italic;
+      }
+      
+      code, .ql-code-block-container {
+        background-color: #f5f5f5;
+        border-radius: 3px;
+        padding: 0.2rem 0.4rem;
+        font-family: monospace;
+      }
+      
+      .ql-code-block-container {
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+      }
+      
+      // LaTeX formula styling
+      .formula {
+        display: inline-block;
+        vertical-align: middle;
+        padding: 0 3px;
+        
+        .katex {
+          font-size: 1.1em;
+        }
+      }
+      
+      // List styling
+      ol, ul {
+        padding-left: 1.5rem;
+        margin-bottom: 0.75rem;
+      }
+      
+      li {
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+  
+  // Placeholder styling
+  .ql-editor.ql-blank::before {
+    color: #aaa;
+    font-style: italic;
+  }
+}
+
+// Dark mode support (optional)
+@media (prefers-color-scheme: dark) {
+  .quill-editor-wrapper {
+    .ql-toolbar {
+      background-color: #2a2a2a;
+      border-bottom-color: #444;
+      
+      button {
+        color: #ddd;
+        
+        &:hover {
+          background-color: #3a3a3a;
+        }
+        
+        &.ql-active {
+          background-color: #444;
+          color: white;
+        }
+      }
+      
+      .ql-picker {
+        color: #ddd;
+        
+        &.ql-expanded .ql-picker-options {
+          background-color: #2a2a2a;
+          border-color: #444;
+        }
+      }
+    }
+    
+    .ql-container {
+      .ql-editor {
+        background-color: #f8f4f4;
+        color: #0b0b0b;
+        
+        h1, h2, h3, h4, h5, h6 {
+          color: #fff;
+        }
+        
+        blockquote {
+          border-left-color: #555;
+          color: #bbb;
+        }
+        
+        code, .ql-code-block-container {
+          background-color: #333;
+          color: #eee;
+        }
+      }
+    }
+    
+    .ql-editor.ql-blank::before {
+      color: #777;
+    }
+  }
+}
+
+// Responsive adjustments
+@include responsive-md-down{
+  .quill-editor-wrapper {
+    .ql-toolbar {
+      padding: 0.5rem;
+      
+      button {
+        height: 24px;
+        width: 24px;
+        margin-right: 3px;
+      }
+    }
+    
+    .ql-container .ql-editor {
+      min-height: 150px;
+      padding: 0.75rem;
+    }
+  }
+}
